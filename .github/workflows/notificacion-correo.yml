@@ -1,0 +1,31 @@
+name: Notificación por correo
+
+on:
+  push:
+    branches: [main, feature_a, feature_b]
+
+permissions:
+  contents: read
+
+jobs:
+  enviar-correo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enviar correo de notificación
+        uses: dawidd6/action-send-mail@4226df7daafa6fc901a43789c49bf7ab309066e7 # v3.11.0
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: Cambios subidos a rama ${{ github.ref_name }}
+          to: ${{ secrets.MAIL_TO }}
+          from: GitHub Actions <${{ secrets.MAIL_USERNAME }}>
+          body: |
+            Se subieron cambios a la rama ${{ github.ref_name }}.
+
+            Repositorio: ${{ github.repository }}
+            Autor: ${{ github.actor }}
+            Commit: ${{ github.sha }}
+            Mensaje: ${{ github.event.head_commit.message }}
